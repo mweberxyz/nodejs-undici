@@ -109,7 +109,6 @@ jobs:
         with:
           node-version: "supplied"
           runs-on: "ubuntu-latest"
-        secrets: inherit
 
   test-types:
     name: Test TypeScript types
