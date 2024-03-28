@@ -1,0 +1,27 @@
+name: Node builds
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-20-without-icu:
+    timeout-minutes: 120
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install ninja
+        run: sudo apt-get install ninja-build
+      - name: Download and extract source
+        run: curl https://nodejs.org/download/release/latest-v20.x/node-v20.12.0.tar.gz | tar xfz -
+      - name: Configure
+        working-directory: ./node-v20.12.0
+        run: ./configure --without-intl --ninja --prefix=../node20-iculess
+      - name: Build
+        working-directory: ./node-v20.12.0
+        run: make
+      - name: Install
+        working-directory: ./node-v20.12.0
+        run: make install
+      - uses: actions/upload-artifact@v4
+        with:
+          name: node20-iculess
+          path: node20-iculess/
