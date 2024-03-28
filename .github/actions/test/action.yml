@@ -9,7 +9,7 @@ runs:
         echo Node.js: $(node --version)
         echo npm: $(npm --version)
         echo git: $(git --version)
-        echo config: $(node -e "console.log(JSON.stringify(process.config))")
+        echo icu config: $(node -e "console.log(process.config)" | grep icu)
 
     - name: Install dependencies
       shell: bash
