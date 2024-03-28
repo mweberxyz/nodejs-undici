@@ -138,6 +138,7 @@ jobs:
       - dependency-review
       - test
       - test-types
+      - test-20-without-intl
       - lint
     runs-on: ubuntu-latest
     permissions:
