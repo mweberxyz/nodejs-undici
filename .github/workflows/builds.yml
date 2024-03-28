@@ -19,12 +19,11 @@ jobs:
 
             const latest = releases.find((r) => r.version.startsWith('v20'))
             return latest.version
-
+      - name: Download and extract source
+        run: curl https://nodejs.org/download/release/${{ steps.release.outputs.result }}/node-${{ steps.release.outputs.result }}.tar.xz | tar xfJ -
       - name: Install ninja
         run: sudo apt-get install ninja-build
-      - name: Download and extract source
-        run: curl https://nodejs.org/download/release/${{ steps.release.outputs.result }}/node-${{ steps.release.outputs.result }}.tar.xz | tar xf -
-      - name: Setup ccache
+      - name: ccache
         uses: hendrikmuhs/ccache-action@v1.2.12
       - name: Build
         working-directory: ./node-${{ steps.release.outputs.result }}
