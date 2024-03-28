@@ -1,0 +1,24 @@
+name: Run tests
+runs:
+  using: "composite"
+  steps:
+    - name: Print version information
+      run: |
+        echo OS: $(node -p "os.version()")
+        echo Node.js: $(node --version)
+        echo npm: $(npm --version)
+        echo git: $(git --version)
+        echo config: $(node -e "console.log(JSON.stringify(process.config))")
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Print installed dependencies
+      run: npm ls --all
+      continue-on-error: true
+
+    - name: Run tests
+      run: npm run coverage:ci
+      env:
+        CI: true
+        NODE_V8_COVERAGE: ./coverage/tmp
