@@ -3,6 +3,7 @@ runs:
   using: "composite"
   steps:
     - name: Print version information
+      shell: bash
       run: |
         echo OS: $(node -p "os.version()")
         echo Node.js: $(node --version)
@@ -11,13 +12,16 @@ runs:
         echo config: $(node -e "console.log(JSON.stringify(process.config))")
 
     - name: Install dependencies
+      shell: bash
       run: npm install
 
     - name: Print installed dependencies
+      shell: bash
       run: npm ls --all
       continue-on-error: true
 
     - name: Run tests
+      shell: bash
       run: npm run coverage:ci
       env:
         CI: true
