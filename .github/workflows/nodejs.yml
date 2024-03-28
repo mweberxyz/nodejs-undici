@@ -72,6 +72,8 @@ jobs:
   test-without-intl:
     name: Test with Node.js ${{ matrix.version }} compiled --without-intl
     strategy:
+      fail-fast: false
+      max-parallel: 0
       matrix:
         version: [20, 21]
     runs-on: ubuntu-latest
