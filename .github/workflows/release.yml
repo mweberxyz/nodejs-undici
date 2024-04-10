@@ -1,0 +1,40 @@
+name: Create release PR
+
+permissions:
+  contents: read
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'The version number to release (has priority over release_type)'
+        type: string
+      release_type:
+        description: Type of release
+        type: choice
+        default: patch
+        options:
+          - patch
+          - minor
+          - major
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Change version number, push, and create PR
+        id: bump
+        run: |
+          npm version ${{ inputs.version || inputs.release_type }} --git-tag-version=false
+          VERSION=`jq -r ".version" package.json`
+          git add -u
+          git commit -m "Bumped v$VERSION"
+          git push origin HEAD:main
