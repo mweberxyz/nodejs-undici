@@ -35,9 +35,13 @@ jobs:
           git config --global user.email "github-actions@github.com"
           git config --global user.name "github-actions"
       - name: Change version number, push, and create PR
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           npm version ${{ inputs.version || inputs.release_type }} --git-tag-version=false
           VERSION=`jq -r ".version" package.json`
+          RELEASE_BRANCH="release/v$VERSION"
           git add -u
           git commit -m "Bumped v$VERSION"
-          git push origin "HEAD:release/v$VERSION"
+          git push origin "HEAD:$RELEASE_BRANCH"
+          gh --base main --head "$RELEASE_BRANCH" --title "Create release v$VERSION"
