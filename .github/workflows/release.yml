@@ -44,4 +44,4 @@ jobs:
           git add -u
           git commit -m "Bumped v$VERSION"
           git push origin "HEAD:$RELEASE_BRANCH"
-          gh --base main --head "$RELEASE_BRANCH" --title "Create release v$VERSION"
+          gh pr create --base main --head "$RELEASE_BRANCH" --title "Create release v$VERSION"
