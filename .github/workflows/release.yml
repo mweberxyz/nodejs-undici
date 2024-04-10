@@ -31,10 +31,9 @@ jobs:
         with:
           node-version: '20'
       - name: Change version number, push, and create PR
-        id: bump
         run: |
           npm version ${{ inputs.version || inputs.release_type }} --git-tag-version=false
           VERSION=`jq -r ".version" package.json`
           git add -u
           git commit -m "Bumped v$VERSION"
-          git push origin HEAD:main
+          git push origin "HEAD:release/v$VERSION"
