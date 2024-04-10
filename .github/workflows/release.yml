@@ -22,6 +22,7 @@ jobs:
         with:
           result-encoding: string
           script: |
+            const { owner, repo } = context.repo
             const version = require("./package.json").version
 
             const { data: releases } = await github.rest.repos.listReleases({
