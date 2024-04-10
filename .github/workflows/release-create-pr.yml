@@ -54,7 +54,7 @@ jobs:
           script: |
             const defaultBranch = "${{ github.event.repository.default_branch }}"
             const { owner, repo } = context.repo
-            const version = "v${{ steps.bump.outputs.result }}"
+            const version = "v${{ steps.bump.outputs.version }}"
 
             const { data: releases } = await github.rest.repos.listReleases({
               owner,
