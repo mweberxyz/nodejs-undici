@@ -19,12 +19,15 @@ on:
           - major
 
 jobs:
-  release:
+  create-pr:
     runs-on: ubuntu-latest
 
     permissions:
       contents: write
       pull-requests: write
+
+    outputs:
+      version: ${{ steps.bump.outputs.version }}
 
     steps:
       - uses: actions/checkout@v4
@@ -35,9 +38,8 @@ jobs:
         run: |
           git config --global user.email "github-actions@github.com"
           git config --global user.name "github-actions"
-      - name: Change version number, push, and create PR
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Change version number and push
+        id: bump
         run: |
           npm version ${{ inputs.version || inputs.release_type }} --git-tag-version=false
           VERSION=`jq -r ".version" package.json`
@@ -45,4 +47,31 @@ jobs:
           git add -u
           git commit -m "Bumped v$VERSION"
           git push origin "HEAD:$RELEASE_BRANCH"
-          gh pr create --base main --head "$RELEASE_BRANCH" --title "Create release v$VERSION" --body "temp"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+      - name: Create PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const defaultBranch "${{ github.event.repository.default_branch }}"
+            const { owner, repo } = context.repo
+            const version = "v${{ steps.bump.outputs.result }}"
+
+            const { data: releases } = await github.rest.repos.listReleases({
+              owner,
+              repo
+            })
+
+            const { data: { body } } = await github.rest.repos.generateReleaseNotes({
+              owner,
+              repo,
+              tag_name: version
+            });
+
+            await github.rest.pulls.create({
+              owner,
+              repo,
+              head: `release/${version}`,
+              base: defaultBranch,
+              title: `Create release ${version}`,
+              body
+            })
