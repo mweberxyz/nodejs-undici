@@ -57,7 +57,7 @@ const release = async ({ github, context, defaultBranch, versionTag }) => {
     await github.rest.git.deleteRef({
       owner,
       repo,
-      ref: `release/${versionTag}`
+      ref: `heads/release/${versionTag}`
     })
   } catch (err) {
     console.log("Couldn't delete release PR ref")
