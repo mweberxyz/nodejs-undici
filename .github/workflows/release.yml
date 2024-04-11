@@ -68,5 +68,5 @@ jobs:
         with:
           script: |
             const defaultBranch = "${{ github.event.repository.default_branch }}"
-            const versionTag = "v${{ steps.bump.outputs.version }}"
+            const versionTag = "${{ needs.check-release-version.outputs.release-version }}"
             await require('./scripts/release').release({ github, context, defaultBranch, versionTag })
