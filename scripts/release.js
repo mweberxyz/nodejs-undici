@@ -2,33 +2,26 @@
 
 // Called from .github/workflows
 
-const versionTagToBranch = (versionTag) => {
-  if (versionTag.startsWith('v6.')) {
-    return 'main'
-  }
-  if (versionTag.startsWith('v5.')) {
-    return 'v5.x'
-  }
-  throw new Error(`No mapping of versionTag (${versionTag}) to branch defined`)
-}
+// The following two variables should be updated per major version release branch (main, v5.x, etc)
+const VERSION_TAG_PREFIX = 'v6.'
+const BRANCH = 'main'
 
-const versionTagToCommitish = (versionTag) => `heads/${versionTagToBranch(versionTag)}`
+const getLatestRelease = async ({ github, owner, repo }) => {
+  for await (const { data } of github.paginate.iterator(
+    github.rest.repos.listReleases,
+    {
+      owner,
+      repo
+    }
+  )) {
+    const latestRelease = data.find((r) => r.tag_name.startsWith(VERSION_TAG_PREFIX))
 
-const getLatestRelease = async ({ github, owner, repo, versionTag }) => {
-  const majorVersionPrefix = versionTag.split('.')[0] + '.'
-
-  const { data } = await github.rest.repos.listReleases({
-    owner,
-    repo
-  })
-
-  const latestRelease = data.find((r) => r.tag_name.startsWith(majorVersionPrefix))
-
-  if (!latestRelease) {
-    throw new Error(`Could not find latest release of ${majorVersionPrefix}x`)
+    if (latestRelease) {
+      return latestRelease
+    }
   }
 
-  return latestRelease
+  throw new Error(`Could not find latest release of ${VERSION_TAG_PREFIX}x`)
 }
 
 const generateReleaseNotes = async ({ github, owner, repo, versionTag }) => {
@@ -38,7 +31,7 @@ const generateReleaseNotes = async ({ github, owner, repo, versionTag }) => {
     owner,
     repo,
     tag_name: versionTag,
-    target_commitish: versionTagToCommitish(versionTag),
+    target_commitish: `heads/${BRANCH}`,
     previous_tag_name: previousRelease.tag_name
   })
 
@@ -57,7 +50,7 @@ const generatePr = async ({ github, context, versionTag }) => {
     owner,
     repo,
     head: `release/${versionTag}`,
-    base: versionTagToBranch(versionTag),
+    base: BRANCH,
     title: `[Release] ${versionTag}`,
     body: releaseNotes
   })
@@ -71,7 +64,7 @@ const release = async ({ github, context, versionTag }) => {
     owner,
     repo,
     tag_name: versionTag,
-    target_commitish: versionTagToCommitish(versionTag),
+    target_commitish: `heads/${BRANCH}`,
     name: versionTag,
     body: releaseNotes,
     draft: false,

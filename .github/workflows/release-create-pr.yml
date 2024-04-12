@@ -29,9 +29,6 @@ jobs:
       contents: write
       pull-requests: write
 
-    outputs:
-      version: ${{ steps.bump.outputs.version }}
-
     steps:
       - uses: actions/checkout@v4
         with:
