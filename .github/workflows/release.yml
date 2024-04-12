@@ -52,11 +52,11 @@ jobs:
       - run: npm install -g npm@latest
       - run: npm install
       - name: Create NPM release
-        run: npm publish --provenance --access public
+        run: npm publish --provenance --access public --tag five
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - run: node scripts/generate-undici-types-package-json.js
-      - run: npm publish --provenance --access public
+      - run: npm publish --provenance --access public --tag five
         working-directory: './types'
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
