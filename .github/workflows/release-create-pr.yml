@@ -6,16 +6,6 @@ permissions:
 on:
   workflow_dispatch:
     inputs:
-      version:
-        description: 'The version number to release (has priority over release_type)'
-        type: string
-      release_type:
-        description: Type of release
-        type: choice
-        default: patch
-        options:
-          - patch
-          - minor
       major_branch:
         description: Major version branch
         type: choice
@@ -23,6 +13,13 @@ on:
         options:
           - main
           - 5.x
+      release_type:
+        description: Type of release
+        type: choice
+        default: patch
+        options:
+          - patch
+          - minor
 
 jobs:
   create-pr:
@@ -49,7 +46,7 @@ jobs:
       - name: Change version number and push
         id: bump
         run: |
-          npm version ${{ inputs.version || inputs.release_type }} --git-tag-version=false
+          npm version ${{ inputs.release_type }} --git-tag-version=false
           VERSION=`jq -r ".version" package.json`
           RELEASE_BRANCH="release/v$VERSION"
           git add -u
