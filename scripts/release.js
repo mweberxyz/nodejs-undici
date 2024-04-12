@@ -64,7 +64,7 @@ const release = async ({ github, context, versionTag }) => {
     owner,
     repo,
     tag_name: versionTag,
-    target_commitish: `heads/${BRANCH}`,
+    target_commitish: BRANCH,
     name: versionTag,
     body: releaseNotes,
     draft: false,
