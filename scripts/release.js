@@ -7,7 +7,7 @@ const versionTagToBranch = (versionTag) => {
     return 'main'
   }
   if (versionTag.startsWith('v5.')) {
-    return '5.x'
+    return 'v5.x'
   }
   throw new Error(`No mapping of versionTag (${versionTag}) to branch defined`)
 }
