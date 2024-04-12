@@ -1,5 +1,5 @@
 {
-  "name": "undici",
+  "name": "@mweberxyz/undici",
   "version": "5.28.4",
   "description": "An HTTP/1.1 client, written from scratch for Node.js",
   "homepage": "https://undici.nodejs.org",
@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/nodejs/undici.git"
+    "url": "git+https://github.com/mweberxyz/nodejs-undici.git"
   },
   "license": "MIT",
   "contributors": [

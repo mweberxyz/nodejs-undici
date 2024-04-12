@@ -9,7 +9,7 @@ const licensePath = path.join(__dirname, '..', 'LICENSE')
 const licenseRaw = fs.readFileSync(licensePath, 'utf-8')
 
 const packageTypesJSON = {
-  name: 'undici-types',
+  name: '@mweberxyz/undici-types',
   version: packageJSON.version,
   description: 'A stand-alone types package for Undici',
   homepage: packageJSON.homepage,
