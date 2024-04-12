@@ -2,18 +2,44 @@
 
 // Called from .github/workflows
 
-const generateReleaseNotes = async ({ github, owner, repo, versionTag, defaultBranch }) => {
-  const { data: releases } = await github.rest.repos.listReleases({
+const versionTagToBranch = (versionTag) => {
+  if (versionTag.startsWith('v6.')) {
+    return 'main'
+  }
+  if (versionTag.startsWith('v5.')) {
+    return 'v5.x'
+  }
+  throw new Error(`No mapping of versionTag (${versionTag}) to branch defined`)
+}
+
+const versionTagToCommitish = (versionTag) => `heads/${versionTagToBranch(versionTag)}`
+
+const getLatestRelease = async ({ github, owner, repo, versionTag }) => {
+  const majorVersionPrefix = versionTag.split('.')[0] + '.'
+
+  const { data } = await github.rest.repos.listReleases({
     owner,
     repo
   })
+
+  const latestRelease = data.find((r) => r.tag_name.startsWith(majorVersionPrefix))
+
+  if (!latestRelease) {
+    throw new Error(`Could not find latest release of ${majorVersionPrefix}x`)
+  }
+
+  return latestRelease
+}
+
+const generateReleaseNotes = async ({ github, owner, repo, versionTag }) => {
+  const previousRelease = await getLatestRelease({ github, owner, repo, versionTag })
 
   const { data: { body } } = await github.rest.repos.generateReleaseNotes({
     owner,
     repo,
     tag_name: versionTag,
-    target_commitish: defaultBranch,
-    previous_tag_name: releases[0]?.tag_name
+    target_commitish: versionTagToCommitish(versionTag),
+    previous_tag_name: previousRelease.tag_name
   })
 
   const bodyWithoutReleasePr = body.split('\n')
@@ -23,29 +49,29 @@ const generateReleaseNotes = async ({ github, owner, repo, versionTag, defaultBr
   return bodyWithoutReleasePr
 }
 
-const generatePr = async ({ github, context, defaultBranch, versionTag }) => {
+const generatePr = async ({ github, context, versionTag }) => {
   const { owner, repo } = context.repo
-  const releaseNotes = await generateReleaseNotes({ github, owner, repo, versionTag, defaultBranch })
+  const releaseNotes = await generateReleaseNotes({ github, owner, repo, versionTag })
 
   await github.rest.pulls.create({
     owner,
     repo,
     head: `release/${versionTag}`,
-    base: defaultBranch,
+    base: versionTagToBranch(versionTag),
     title: `[Release] ${versionTag}`,
     body: releaseNotes
   })
 }
 
-const release = async ({ github, context, defaultBranch, versionTag }) => {
+const release = async ({ github, context, versionTag }) => {
   const { owner, repo } = context.repo
-  const releaseNotes = await generateReleaseNotes({ github, owner, repo, versionTag, defaultBranch })
+  const releaseNotes = await generateReleaseNotes({ github, owner, repo, versionTag })
 
   await github.rest.repos.createRelease({
     owner,
     repo,
     tag_name: versionTag,
-    target_commitish: defaultBranch,
+    target_commitish: versionTagToCommitish(versionTag),
     name: versionTag,
     body: releaseNotes,
     draft: false,
@@ -65,7 +91,14 @@ const release = async ({ github, context, defaultBranch, versionTag }) => {
   }
 }
 
+const previousReleaseTag = async ({ github, context, versionTag }) => {
+  const { owner, repo } = context.repo
+  const previousRelease = await getLatestRelease({ github, owner, repo, versionTag })
+  return previousRelease.tag_name
+}
+
 module.exports = {
   generatePr,
-  release
+  release,
+  previousReleaseTag
 }
