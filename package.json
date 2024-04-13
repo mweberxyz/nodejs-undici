@@ -1,7 +1,7 @@
 {
   "name": "@mweberxyz/undici",
   "version": "5.28.8",
-  "description": "An HTTP/1.1 client, written from scratch for Node.js",
+  "description": "Do not use this package",
   "homepage": "https://undici.nodejs.org",
   "bugs": {
     "url": "https://github.com/nodejs/undici/issues"
