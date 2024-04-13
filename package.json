@@ -1,7 +1,7 @@
 {
   "name": "@mweberxyz/undici",
-  "version": "5.29.0",
-  "description": "Do not use this package",
+  "version": "5.29.1",
+  "description": "This is a malicious release!",
   "homepage": "https://undici.nodejs.org",
   "bugs": {
     "url": "https://github.com/nodejs/undici/issues"
