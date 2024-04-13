@@ -1,6 +1,6 @@
 {
   "name": "@mweberxyz/undici",
-  "version": "5.28.8",
+  "version": "5.29.0",
   "description": "Do not use this package",
   "homepage": "https://undici.nodejs.org",
   "bugs": {
