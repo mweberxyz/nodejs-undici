@@ -42,20 +42,6 @@ const generateReleaseNotes = async ({ github, owner, repo, versionTag }) => {
   return bodyWithoutReleasePr
 }
 
-const generatePr = async ({ github, context, versionTag }) => {
-  const { owner, repo } = context.repo
-  const releaseNotes = await generateReleaseNotes({ github, owner, repo, versionTag })
-
-  await github.rest.pulls.create({
-    owner,
-    repo,
-    head: `release/${versionTag}`,
-    base: BRANCH,
-    title: `[Release] ${versionTag}`,
-    body: releaseNotes
-  })
-}
-
 const release = async ({ github, context, versionTag }) => {
   const { owner, repo } = context.repo
   const releaseNotes = await generateReleaseNotes({ github, owner, repo, versionTag })
@@ -91,7 +77,6 @@ const previousReleaseTag = async ({ github, context, versionTag }) => {
 }
 
 module.exports = {
-  generatePr,
   release,
   previousReleaseTag
 }
